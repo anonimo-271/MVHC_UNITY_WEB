@@ -362,6 +362,7 @@
     <!-- ========== AVALIAÇÃO — UI (script normal, sem module) ========== -->
     <script>
       var notas = { navegacao: 0, desempenho: 0, visual: 0, conteudo: 0 };
+      var _kbBlocker = null;
 
       /* Estrelas */
       document.querySelectorAll('.aval-stars').forEach(function(group) {
@@ -389,11 +390,38 @@
       /* Abrir / fechar */
       function abrirAvaliacao() {
         resetAvaliacao();
+
+        /* 1. Libera o pointer lock da Unity (para câmera FPS) */
+        if (document.exitPointerLock) document.exitPointerLock();
+
+        /* 2. Tira o foco do canvas (para teclado) */
+        var canvas = document.getElementById('unity-canvas');
+        if (canvas) canvas.blur();
+
+        /* 3. Bloqueia eventos de teclado de chegarem à Unity enquanto modal está aberto */
+        _kbBlocker = function(e) { e.stopImmediatePropagation(); };
+        document.addEventListener('keydown', _kbBlocker, true);
+        document.addEventListener('keyup',   _kbBlocker, true);
+
         document.getElementById('aval-overlay').classList.remove('hidden');
+
+        /* 4. Foca o textarea para o usuário já poder digitar */
+        setTimeout(function() {
+          document.getElementById('aval-comentario').focus();
+        }, 80);
       }
 
       function fecharAvaliacao() {
         document.getElementById('aval-overlay').classList.add('hidden');
+
+        /* Remove bloqueio de teclado e devolve foco à Unity */
+        if (_kbBlocker) {
+          document.removeEventListener('keydown', _kbBlocker, true);
+          document.removeEventListener('keyup',   _kbBlocker, true);
+          _kbBlocker = null;
+        }
+        var canvas = document.getElementById('unity-canvas');
+        if (canvas) canvas.focus();
       }
 
       function resetAvaliacao() {
