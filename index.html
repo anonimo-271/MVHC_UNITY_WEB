@@ -8,298 +8,27 @@
     <link rel="stylesheet" href="TemplateData/style.css">
     <style>
       /* ============================================================
-         MODAL DE AVALIAÇÃO
+         SISTEMA DE AVALIAÇÃO
          ============================================================ */
       :root {
-        --aval-bg:      #07091A;
         --aval-surface: #161A3A;
         --aval-border:  rgba(92,105,255,.22);
         --aval-cyan:    #0CFFE1;
         --aval-violet:  #5B4EFF;
-        --aval-violet2: #8B7EFF;
         --aval-text:    #E2E6FF;
         --aval-muted:   #7B82B0;
         --aval-dim:     #4A5080;
-        --aval-radius:  16px;
         --aval-star:    #F0C040;
+        --aval-radius:  16px;
       }
 
-      .aval-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        background: rgba(4, 5, 18, .80);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        animation: aval-fade-in .25s ease both;
-      }
-
-      .aval-overlay.hidden { display: none !important; }
-
-      @keyframes aval-fade-in {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-      }
-
-      .aval-card {
-        position: relative;
-        background: var(--aval-surface);
-        border: 1px solid var(--aval-border);
-        border-radius: var(--aval-radius);
-        padding: 40px 36px 36px;
-        width: 100%;
-        max-width: 480px;
-        box-shadow: 0 0 80px rgba(12,255,225,.07), 0 0 40px rgba(91,78,255,.12);
-        animation: aval-card-in .3s cubic-bezier(0.34,1.4,0.64,1) both;
-      }
-
-      @keyframes aval-card-in {
-        from { opacity: 0; transform: translateY(24px) scale(.97); }
-        to   { opacity: 1; transform: translateY(0)   scale(1);    }
-      }
-
-      .aval-close {
-        position: absolute;
-        top: 14px;
-        right: 16px;
-        width: 32px;
-        height: 32px;
-        background: transparent;
-        border: 1px solid var(--aval-border);
-        border-radius: 8px;
-        color: var(--aval-muted);
-        font-size: .85rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: color .2s, border-color .2s, background .2s;
-      }
-      .aval-close:hover { color: var(--aval-cyan); border-color: var(--aval-cyan); background: rgba(12,255,225,.06); }
-
-      /* Header */
-      .aval-header {
-        text-align: center;
-        margin-bottom: 28px;
-      }
-
-      .aval-icon {
-        font-size: 2.2rem;
-        margin-bottom: 10px;
-      }
-
-      .aval-title {
-        font-family: 'Orbitron', 'Segoe UI', sans-serif;
-        font-size: 1.15rem;
-        font-weight: 800;
-        letter-spacing: .04em;
-        color: var(--aval-text);
-        margin-bottom: 6px;
-      }
-
-      .aval-sub {
-        font-size: .88rem;
-        color: var(--aval-muted);
-        margin: 0;
-      }
-
-      /* Critérios */
-      .aval-criterios {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        margin-bottom: 22px;
-      }
-
-      .aval-criterio {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        background: rgba(7,9,26,.5);
-        border: 1px solid var(--aval-border);
-        border-radius: 10px;
-        padding: 12px 16px;
-        transition: border-color .2s;
-      }
-
-      .aval-criterio:has(.aval-star.selected) {
-        border-color: rgba(12,255,225,.3);
-      }
-
-      .aval-criterio-label {
-        font-family: 'Orbitron', 'Segoe UI', sans-serif;
-        font-size: .6rem;
-        font-weight: 700;
-        letter-spacing: .1em;
-        text-transform: uppercase;
-        color: var(--aval-muted);
-        flex-shrink: 0;
-        min-width: 120px;
-      }
-
-      .aval-stars {
-        display: flex;
-        gap: 4px;
-        align-items: center;
-      }
-
-      .aval-star {
-        font-size: 1.7rem;
-        color: var(--aval-dim);
-        cursor: pointer;
-        transition: color .12s, transform .12s;
-        user-select: none;
-        line-height: 1;
-      }
-
-      .aval-star.hovered,
-      .aval-star.selected {
-        color: var(--aval-star);
-        transform: scale(1.15);
-      }
-
-      /* Comentário */
-      .aval-comment-label {
-        font-family: 'Orbitron', 'Segoe UI', sans-serif;
-        font-size: .62rem;
-        font-weight: 700;
-        letter-spacing: .1em;
-        text-transform: uppercase;
-        color: var(--aval-muted);
-        display: block;
-        margin-bottom: 6px;
-      }
-
-      .aval-comment-label .optional {
-        font-size: .75em;
-        text-transform: none;
-        letter-spacing: 0;
-        opacity: .55;
-      }
-
-      .aval-textarea {
-        width: 100%;
-        background: rgba(7,9,26,.7);
-        border: 1px solid var(--aval-border);
-        border-radius: 10px;
-        color: var(--aval-text);
-        font-family: 'DM Sans', 'Segoe UI', sans-serif;
-        font-size: .9rem;
-        padding: 10px 14px;
-        resize: none;
-        height: 80px;
-        box-sizing: border-box;
-        outline: none;
-        transition: border-color .2s, box-shadow .2s;
-        margin-bottom: 6px;
-      }
-
-      .aval-textarea:focus {
-        border-color: var(--aval-cyan);
-        box-shadow: 0 0 0 3px rgba(12,255,225,.1);
-      }
-
-      .aval-char {
-        font-size: .72rem;
-        color: var(--aval-dim);
-        text-align: right;
-        display: block;
-        margin-bottom: 16px;
-      }
-
-      /* Erro */
-      .aval-erro {
-        display: block;
-        font-size: .78rem;
-        color: #ff5f6b;
-        min-height: 18px;
-        margin-bottom: 10px;
-        text-align: center;
-      }
-
-      /* Botão enviar */
-      .aval-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        background: linear-gradient(135deg, var(--aval-violet), #3DCEFF);
-        color: #fff;
-        font-family: 'Orbitron', 'Segoe UI', sans-serif;
-        font-size: .72rem;
-        font-weight: 700;
-        letter-spacing: .1em;
-        text-transform: uppercase;
-        padding: 14px 28px;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: transform .2s, box-shadow .2s;
-        box-shadow: 0 4px 24px rgba(91,78,255,.35);
-      }
-
-      .aval-btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 36px rgba(12,255,225,.3);
-      }
-
-      .aval-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-
-      /* Sucesso */
-      .aval-sucesso {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        text-align: center;
-        padding: 12px 0 0;
-        animation: aval-fade-in .3s ease both;
-      }
-
-      .aval-sucesso.hidden { display: none !important; }
-
-      .aval-sucesso-ico {
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, var(--aval-cyan), var(--aval-violet));
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-        color: #fff;
-        font-weight: 700;
-        box-shadow: 0 0 24px rgba(12,255,225,.35);
-      }
-
-      .aval-sucesso h3 {
-        font-family: 'Orbitron', 'Segoe UI', sans-serif;
-        font-size: 1rem;
-        font-weight: 800;
-        color: var(--aval-text);
-        letter-spacing: .04em;
-        margin: 0;
-      }
-
-      .aval-sucesso p {
-        font-size: .88rem;
-        color: var(--aval-muted);
-        margin: 0;
-      }
-
-      /* Botão flutuante */
-      .aval-fab {
+      /* --- Botão flutuante --- */
+      #aval-fab {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        z-index: 8000;
-        display: flex;
+        z-index: 9000;
+        display: inline-flex;
         align-items: center;
         gap: 8px;
         background: linear-gradient(135deg, var(--aval-violet), #3DCEFF);
@@ -313,38 +42,171 @@
         border: none;
         border-radius: 100px;
         cursor: pointer;
-        box-shadow: 0 4px 24px rgba(91,78,255,.45), 0 0 0 1px rgba(12,255,225,.15);
+        box-shadow: 0 4px 24px rgba(91,78,255,.5), 0 0 0 1px rgba(12,255,225,.2);
         transition: transform .2s, box-shadow .2s;
-        animation: fab-in .4s .8s cubic-bezier(0.34,1.4,0.64,1) both;
+        pointer-events: all;
+        animation: fab-in .5s .6s cubic-bezier(0.34,1.4,0.64,1) both;
       }
-
-      .aval-fab:hover {
+      #aval-fab:hover {
         transform: translateY(-3px) scale(1.04);
-        box-shadow: 0 8px 36px rgba(12,255,225,.35), 0 0 0 1px rgba(12,255,225,.3);
+        box-shadow: 0 8px 36px rgba(12,255,225,.4), 0 0 0 1px rgba(12,255,225,.35);
       }
-
-      .aval-fab-star { font-size: 1rem; }
-
       @keyframes fab-in {
-        from { opacity: 0; transform: translateY(20px) scale(.9); }
-        to   { opacity: 1; transform: translateY(0)   scale(1);   }
+        from { opacity: 0; transform: translateY(20px) scale(.88); }
+        to   { opacity: 1; transform: translateY(0)   scale(1);    }
       }
 
-      /* Responsivo mobile */
+      /* --- Overlay --- */
+      #aval-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(4, 5, 18, .82);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      #aval-overlay.hidden { display: none !important; }
+
+      /* --- Card --- */
+      .aval-card {
+        position: relative;
+        background: var(--aval-surface);
+        border: 1px solid var(--aval-border);
+        border-radius: var(--aval-radius);
+        padding: 40px 36px 36px;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 0 80px rgba(12,255,225,.07), 0 0 40px rgba(91,78,255,.12);
+        animation: card-in .3s cubic-bezier(0.34,1.4,0.64,1) both;
+      }
+      @keyframes card-in {
+        from { opacity: 0; transform: translateY(24px) scale(.97); }
+        to   { opacity: 1; transform: translateY(0)   scale(1);    }
+      }
+
+      /* --- Fechar --- */
+      .aval-close {
+        position: absolute;
+        top: 14px; right: 16px;
+        width: 32px; height: 32px;
+        background: transparent;
+        border: 1px solid var(--aval-border);
+        border-radius: 8px;
+        color: var(--aval-muted);
+        font-size: .85rem;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: color .2s, border-color .2s, background .2s;
+      }
+      .aval-close:hover { color: var(--aval-cyan); border-color: var(--aval-cyan); background: rgba(12,255,225,.06); }
+
+      /* --- Header --- */
+      .aval-header { text-align: center; margin-bottom: 28px; }
+      .aval-header .ico { font-size: 2.2rem; margin-bottom: 10px; }
+      .aval-header h2 {
+        font-family: 'Orbitron', 'Segoe UI', sans-serif;
+        font-size: 1.15rem; font-weight: 800; letter-spacing: .04em;
+        color: var(--aval-text); margin: 0 0 6px;
+      }
+      .aval-header p { font-size: .88rem; color: var(--aval-muted); margin: 0; }
+
+      /* --- Critérios --- */
+      .aval-criterios { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+      .aval-criterio {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: rgba(7,9,26,.5);
+        border: 1px solid var(--aval-border);
+        border-radius: 10px; padding: 11px 16px;
+        transition: border-color .2s;
+      }
+      .aval-criterio.rated { border-color: rgba(12,255,225,.3); }
+      .aval-criterio-label {
+        font-family: 'Orbitron', 'Segoe UI', sans-serif;
+        font-size: .58rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--aval-muted);
+        flex-shrink: 0; min-width: 115px;
+      }
+      .aval-stars { display: flex; gap: 4px; align-items: center; }
+      .aval-star {
+        font-size: 1.7rem; color: var(--aval-dim);
+        cursor: pointer; transition: color .1s, transform .1s;
+        user-select: none; line-height: 1;
+      }
+      .aval-star.on { color: var(--aval-star); transform: scale(1.15); }
+
+      /* --- Comentário --- */
+      .aval-clabel {
+        font-family: 'Orbitron', 'Segoe UI', sans-serif;
+        font-size: .6rem; font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--aval-muted);
+        display: block; margin-bottom: 6px;
+      }
+      .aval-clabel .opt { font-size: .75em; text-transform: none; letter-spacing: 0; opacity: .55; }
+      .aval-textarea {
+        width: 100%; box-sizing: border-box;
+        background: rgba(7,9,26,.7); border: 1px solid var(--aval-border);
+        border-radius: 10px; color: var(--aval-text);
+        font-family: 'DM Sans', 'Segoe UI', sans-serif; font-size: .9rem;
+        padding: 10px 14px; resize: none; height: 80px; outline: none;
+        transition: border-color .2s, box-shadow .2s; margin-bottom: 4px;
+      }
+      .aval-textarea:focus { border-color: var(--aval-cyan); box-shadow: 0 0 0 3px rgba(12,255,225,.1); }
+      .aval-char { font-size: .72rem; color: var(--aval-dim); text-align: right; display: block; margin-bottom: 14px; }
+
+      /* --- Erro --- */
+      .aval-erro {
+        display: block; font-size: .78rem; color: #ff5f6b;
+        min-height: 18px; margin-bottom: 10px; text-align: center;
+      }
+
+      /* --- Botão enviar --- */
+      .aval-btn {
+        width: 100%; display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, var(--aval-violet), #3DCEFF); color: #fff;
+        font-family: 'Orbitron', 'Segoe UI', sans-serif;
+        font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+        padding: 14px 28px; border: none; border-radius: 10px; cursor: pointer;
+        transition: transform .2s, box-shadow .2s; box-shadow: 0 4px 24px rgba(91,78,255,.35);
+      }
+      .aval-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(12,255,225,.3); }
+      .aval-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+      /* --- Sucesso --- */
+      #aval-sucesso {
+        display: none; flex-direction: column; align-items: center;
+        gap: 10px; text-align: center; padding: 12px 0 0;
+      }
+      #aval-sucesso.show { display: flex; animation: fade-in .3s ease both; }
+      @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+      #aval-sucesso .ico {
+        width: 48px; height: 48px;
+        background: linear-gradient(135deg, var(--aval-cyan), var(--aval-violet));
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; color: #fff; font-weight: 700;
+        box-shadow: 0 0 24px rgba(12,255,225,.35);
+      }
+      #aval-sucesso h3 {
+        font-family: 'Orbitron', 'Segoe UI', sans-serif;
+        font-size: 1rem; font-weight: 800; color: var(--aval-text); margin: 0;
+      }
+      #aval-sucesso p { font-size: .88rem; color: var(--aval-muted); margin: 0; }
+
       @media (max-width: 520px) {
-        .aval-card { padding: 28px 20px 24px; }
+        .aval-card { padding: 28px 18px 22px; }
         .aval-criterio { flex-direction: column; align-items: flex-start; gap: 8px; }
         .aval-criterio-label { min-width: unset; }
         .aval-star { font-size: 1.5rem; }
-        .aval-fab { bottom: 16px; right: 16px; padding: 10px 16px; font-size: .6rem; }
+        #aval-fab { bottom: 16px; right: 16px; padding: 10px 16px; font-size: .6rem; }
       }
     </style>
   </head>
   <body>
 
-    <!-- ============================================================
-         UNITY CONTAINER
-         ============================================================ -->
+    <!-- ========== UNITY CONTAINER ========== -->
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
@@ -361,99 +223,75 @@
       </div>
     </div>
 
-    <!-- ============================================================
-         BOTÃO FLUTUANTE DE AVALIAÇÃO
-         ============================================================ -->
-    <button class="aval-fab" onclick="window.abrirAvaliacao && window.abrirAvaliacao()">
-      <span class="aval-fab-star">⭐</span>
-      Avaliar Experiência
+    <!-- ========== BOTÃO FLUTUANTE ========== -->
+    <button id="aval-fab" onclick="abrirAvaliacao()">
+      ⭐ Avaliar Experiência
     </button>
 
-    <!-- ============================================================
-         MODAL DE AVALIAÇÃO
-         ============================================================ -->
-    <div id="aval-overlay" class="aval-overlay hidden" onclick="fecharAvaliacaoOverlay(event)">
+    <!-- ========== MODAL ========== -->
+    <div id="aval-overlay" class="hidden" onclick="if(event.target===this)fecharAvaliacao()">
       <div class="aval-card">
 
-        <button class="aval-close" onclick="fecharAvaliacao()" title="Fechar">✕</button>
+        <button class="aval-close" onclick="fecharAvaliacao()">✕</button>
 
-        <!-- Header -->
         <div class="aval-header">
-          <div class="aval-icon">⭐</div>
-          <h2 class="aval-title">Avalie a Experiência</h2>
-          <p class="aval-sub">Como foi explorar o Museu Virtual?</p>
+          <div class="ico">⭐</div>
+          <h2>Avalie a Experiência</h2>
+          <p>Como foi explorar o Museu Virtual?</p>
         </div>
 
-        <!-- Critérios com estrelas -->
-        <div class="aval-criterios" id="aval-form-body">
-
-          <div class="aval-criterio">
+        <div class="aval-criterios">
+          <div class="aval-criterio" id="row-navegacao">
             <span class="aval-criterio-label">Navegação 3D</span>
-            <div class="aval-stars" data-criterio="navegacao">
-              <span class="aval-star" data-valor="1">★</span>
-              <span class="aval-star" data-valor="2">★</span>
-              <span class="aval-star" data-valor="3">★</span>
-              <span class="aval-star" data-valor="4">★</span>
-              <span class="aval-star" data-valor="5">★</span>
+            <div class="aval-stars" data-key="navegacao">
+              <span class="aval-star" data-v="1">★</span><span class="aval-star" data-v="2">★</span>
+              <span class="aval-star" data-v="3">★</span><span class="aval-star" data-v="4">★</span>
+              <span class="aval-star" data-v="5">★</span>
             </div>
           </div>
-
-          <div class="aval-criterio">
+          <div class="aval-criterio" id="row-desempenho">
             <span class="aval-criterio-label">Desempenho</span>
-            <div class="aval-stars" data-criterio="desempenho">
-              <span class="aval-star" data-valor="1">★</span>
-              <span class="aval-star" data-valor="2">★</span>
-              <span class="aval-star" data-valor="3">★</span>
-              <span class="aval-star" data-valor="4">★</span>
-              <span class="aval-star" data-valor="5">★</span>
+            <div class="aval-stars" data-key="desempenho">
+              <span class="aval-star" data-v="1">★</span><span class="aval-star" data-v="2">★</span>
+              <span class="aval-star" data-v="3">★</span><span class="aval-star" data-v="4">★</span>
+              <span class="aval-star" data-v="5">★</span>
             </div>
           </div>
-
-          <div class="aval-criterio">
+          <div class="aval-criterio" id="row-visual">
             <span class="aval-criterio-label">Qualidade Visual</span>
-            <div class="aval-stars" data-criterio="visual">
-              <span class="aval-star" data-valor="1">★</span>
-              <span class="aval-star" data-valor="2">★</span>
-              <span class="aval-star" data-valor="3">★</span>
-              <span class="aval-star" data-valor="4">★</span>
-              <span class="aval-star" data-valor="5">★</span>
+            <div class="aval-stars" data-key="visual">
+              <span class="aval-star" data-v="1">★</span><span class="aval-star" data-v="2">★</span>
+              <span class="aval-star" data-v="3">★</span><span class="aval-star" data-v="4">★</span>
+              <span class="aval-star" data-v="5">★</span>
             </div>
           </div>
-
-          <div class="aval-criterio">
+          <div class="aval-criterio" id="row-conteudo">
             <span class="aval-criterio-label">Conteúdo Histórico</span>
-            <div class="aval-stars" data-criterio="conteudo">
-              <span class="aval-star" data-valor="1">★</span>
-              <span class="aval-star" data-valor="2">★</span>
-              <span class="aval-star" data-valor="3">★</span>
-              <span class="aval-star" data-valor="4">★</span>
-              <span class="aval-star" data-valor="5">★</span>
+            <div class="aval-stars" data-key="conteudo">
+              <span class="aval-star" data-v="1">★</span><span class="aval-star" data-v="2">★</span>
+              <span class="aval-star" data-v="3">★</span><span class="aval-star" data-v="4">★</span>
+              <span class="aval-star" data-v="5">★</span>
             </div>
           </div>
-
         </div>
 
-        <!-- Comentário opcional -->
-        <label class="aval-comment-label" for="aval-comentario">
-          Comentário <span class="optional">(opcional)</span>
+        <label class="aval-clabel" for="aval-comentario">
+          Comentário <span class="opt">(opcional)</span>
         </label>
         <textarea id="aval-comentario" class="aval-textarea"
-                  placeholder="O que mais gostou ou poderia melhorar?"
-                  maxlength="300"
-                  oninput="document.getElementById('aval-char').textContent = this.value.length + '/300'"></textarea>
+          placeholder="O que mais gostou ou poderia melhorar?"
+          maxlength="300"
+          oninput="document.getElementById('aval-char').textContent=this.value.length+'/300'"></textarea>
         <span class="aval-char" id="aval-char">0/300</span>
 
-        <!-- Erro -->
         <span class="aval-erro" id="aval-erro"></span>
 
-        <!-- Botão -->
         <button class="aval-btn" id="aval-btn" onclick="enviarAvaliacao()">
           Enviar Avaliação →
         </button>
 
-        <!-- Sucesso (oculto até envio) -->
-        <div class="aval-sucesso hidden" id="aval-sucesso">
-          <div class="aval-sucesso-ico">✓</div>
+        <div id="aval-sucesso">
+          <div class="ico">✓</div>
           <h3>Obrigado!</h3>
           <p>Sua avaliação foi registrada com sucesso.</p>
         </div>
@@ -461,9 +299,7 @@
       </div>
     </div>
 
-    <!-- ============================================================
-         UNITY LOADER
-         ============================================================ -->
+    <!-- ========== UNITY LOADER ========== -->
     <script>
       var canvas = document.querySelector("#unity-canvas");
 
@@ -478,16 +314,12 @@
         if (type == 'error') div.style = 'background: red; padding: 10px;';
         else {
           if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
+          setTimeout(function() { warningBanner.removeChild(div); updateBannerVisibility(); }, 5000);
         }
         updateBannerVisibility();
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/MVHC_UNITY_WEB.loader.js";
       var config = {
         arguments: [],
         dataUrl:      buildUrl + "/MVHC_UNITY_WEB.data.unityweb",
@@ -515,175 +347,159 @@
       document.querySelector("#unity-loading-bar").style.display = "block";
 
       var script = document.createElement("script");
-      script.src = loaderUrl;
+      script.src = buildUrl + "/MVHC_UNITY_WEB.loader.js";
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
         }).then((unityInstance) => {
           document.querySelector("#unity-loading-bar").style.display = "none";
-          document.querySelector("#unity-fullscreen-button").onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        }).catch((message) => {
-          alert(message);
-        });
+          document.querySelector("#unity-fullscreen-button").onclick = () => unityInstance.SetFullscreen(1);
+        }).catch((message) => { alert(message); });
       };
       document.body.appendChild(script);
     </script>
 
-    <!-- ============================================================
-         SISTEMA DE AVALIAÇÃO — Firebase + Lógica
-         ============================================================ -->
+    <!-- ========== AVALIAÇÃO — UI (script normal, sem module) ========== -->
+    <script>
+      var notas = { navegacao: 0, desempenho: 0, visual: 0, conteudo: 0 };
+
+      /* Estrelas */
+      document.querySelectorAll('.aval-stars').forEach(function(group) {
+        var key   = group.dataset.key;
+        var stars = Array.from(group.querySelectorAll('.aval-star'));
+
+        function paint(val) {
+          stars.forEach(function(s) {
+            s.classList.toggle('on', parseInt(s.dataset.v) <= val);
+          });
+        }
+
+        stars.forEach(function(star) {
+          star.addEventListener('mouseover', function() { paint(parseInt(star.dataset.v)); });
+          star.addEventListener('mouseout',  function() { paint(notas[key]); });
+          star.addEventListener('click', function() {
+            notas[key] = parseInt(star.dataset.v);
+            paint(notas[key]);
+            document.getElementById('row-' + key).classList.add('rated');
+            document.getElementById('aval-erro').textContent = '';
+          });
+        });
+      });
+
+      /* Abrir / fechar */
+      function abrirAvaliacao() {
+        resetAvaliacao();
+        document.getElementById('aval-overlay').classList.remove('hidden');
+      }
+
+      function fecharAvaliacao() {
+        document.getElementById('aval-overlay').classList.add('hidden');
+      }
+
+      function resetAvaliacao() {
+        Object.keys(notas).forEach(function(k) { notas[k] = 0; });
+
+        document.querySelectorAll('.aval-star').forEach(function(s) { s.classList.remove('on'); });
+        document.querySelectorAll('.aval-criterio').forEach(function(r) { r.classList.remove('rated'); });
+
+        var ta = document.getElementById('aval-comentario');
+        if (ta) ta.value = '';
+        var ch = document.getElementById('aval-char');
+        if (ch) ch.textContent = '0/300';
+
+        document.getElementById('aval-erro').textContent = '';
+
+        /* Restaura formulário */
+        document.querySelector('.aval-criterios').style.display = '';
+        document.querySelector('.aval-clabel').style.display    = '';
+        document.getElementById('aval-comentario').style.display = '';
+        document.getElementById('aval-char').style.display       = '';
+        var btn = document.getElementById('aval-btn');
+        btn.style.display  = '';
+        btn.disabled       = false;
+        btn.textContent    = 'Enviar Avaliação →';
+        var suc = document.getElementById('aval-sucesso');
+        suc.classList.remove('show');
+      }
+
+      /* Validação e envio — chama o Firebase que fica no module */
+      function enviarAvaliacao() {
+        var ausentes = Object.entries(notas)
+          .filter(function(e) { return e[1] === 0; })
+          .map(function(e) {
+            return { navegacao: 'Navegação 3D', desempenho: 'Desempenho',
+                     visual: 'Visual', conteudo: 'Conteúdo' }[e[0]];
+          });
+
+        if (ausentes.length) {
+          document.getElementById('aval-erro').textContent = 'Avalie: ' + ausentes.join(', ');
+          return;
+        }
+
+        var btn = document.getElementById('aval-btn');
+        btn.disabled    = true;
+        btn.textContent = 'Enviando…';
+        document.getElementById('aval-erro').textContent = '';
+
+        var comentario = (document.getElementById('aval-comentario').value || '').trim();
+        var media      = (notas.navegacao + notas.desempenho + notas.visual + notas.conteudo) / 4;
+
+        /* Dispara o save no Firebase (definido pelo module abaixo) */
+        if (typeof window._avalSave === 'function') {
+          window._avalSave(Object.assign({}, notas), parseFloat(media.toFixed(2)), comentario || null)
+            .then(function() { mostrarSucesso(); })
+            .catch(function(err) {
+              console.error(err);
+              document.getElementById('aval-erro').textContent = 'Erro ao enviar. Tente novamente.';
+              btn.disabled    = false;
+              btn.textContent = 'Enviar Avaliação →';
+            });
+        } else {
+          /* Firebase ainda não carregou — tenta de novo em 500ms */
+          setTimeout(enviarAvaliacao, 500);
+        }
+      }
+
+      function mostrarSucesso() {
+        document.querySelector('.aval-criterios').style.display = 'none';
+        document.querySelector('.aval-clabel').style.display    = 'none';
+        document.getElementById('aval-comentario').style.display = 'none';
+        document.getElementById('aval-char').style.display       = 'none';
+        document.getElementById('aval-btn').style.display        = 'none';
+        document.getElementById('aval-sucesso').classList.add('show');
+        setTimeout(fecharAvaliacao, 3000);
+      }
+    </script>
+
+    <!-- ========== FIREBASE (module) ========== -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-      import {
-        getFirestore,
-        collection,
-        addDoc,
-        serverTimestamp
-      } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+      import { getFirestore, collection, addDoc, serverTimestamp }
+        from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-      const firebaseConfig = {
+      const app = initializeApp({
         apiKey:            "AIzaSyACU2e2XRbrVH4_iYjF9_memwqxcxBvTzg",
         authDomain:        "mvhc-d8cde.firebaseapp.com",
         projectId:         "mvhc-d8cde",
         storageBucket:     "mvhc-d8cde.firebasestorage.app",
         messagingSenderId: "520624726072",
         appId:             "1:520624726072:web:801b9ede2d99dec62186cd"
-      };
+      });
 
-      const app           = initializeApp(firebaseConfig);
-      const db            = getFirestore(app);
-      const avaliacoesRef = collection(db, "avaliacoes");
+      const ref = collection(getFirestore(app), "avaliacoes");
 
-      /* ----------------------------------------------------------
-         Estado das estrelas
-      ---------------------------------------------------------- */
-      const notas = { navegacao: 0, desempenho: 0, visual: 0, conteudo: 0 };
-
-      function initStars() {
-        document.querySelectorAll('.aval-stars').forEach(group => {
-          const criterio = group.dataset.criterio;
-          const stars    = Array.from(group.querySelectorAll('.aval-star'));
-
-          stars.forEach(star => {
-            star.addEventListener('mouseover', () => realcarEstrelas(stars, star.dataset.valor));
-            star.addEventListener('mouseout',  () => realcarEstrelas(stars, notas[criterio]));
-            star.addEventListener('click', () => {
-              notas[criterio] = parseInt(star.dataset.valor);
-              realcarEstrelas(stars, notas[criterio]);
-              stars.forEach(s => s.classList.toggle('selected', parseInt(s.dataset.valor) <= notas[criterio]));
-              document.getElementById('aval-erro').textContent = '';
-            });
-          });
+      /* Expõe a função de save para o script normal */
+      window._avalSave = function(notas, media, comentario) {
+        return addDoc(ref, {
+          navegacao:  notas.navegacao,
+          desempenho: notas.desempenho,
+          visual:     notas.visual,
+          conteudo:   notas.conteudo,
+          media,
+          comentario,
+          timestamp: serverTimestamp()
         });
-      }
-
-      function realcarEstrelas(stars, valor) {
-        const v = parseInt(valor) || 0;
-        stars.forEach(s => {
-          const sv = parseInt(s.dataset.valor);
-          s.classList.toggle('hovered', sv <= v && !s.classList.contains('selected'));
-        });
-      }
-
-      /* ----------------------------------------------------------
-         Envio para o Firestore
-      ---------------------------------------------------------- */
-      async function enviarAvaliacao() {
-        const erroEl = document.getElementById('aval-erro');
-        const btn    = document.getElementById('aval-btn');
-
-        const ausentes = Object.entries(notas)
-          .filter(([, v]) => v === 0)
-          .map(([k]) => ({ navegacao: 'Navegação 3D', desempenho: 'Desempenho', visual: 'Visual', conteudo: 'Conteúdo' }[k]));
-
-        if (ausentes.length) {
-          erroEl.textContent = `Avalie: ${ausentes.join(', ')}`;
-          return;
-        }
-
-        erroEl.textContent = '';
-        btn.disabled       = true;
-        btn.textContent    = 'Enviando…';
-
-        const media = (notas.navegacao + notas.desempenho + notas.visual + notas.conteudo) / 4;
-        const comentario = (document.getElementById('aval-comentario')?.value || '').trim();
-
-        try {
-          await addDoc(avaliacoesRef, {
-            ...notas,
-            media:     parseFloat(media.toFixed(2)),
-            comentario: comentario || null,
-            timestamp:  serverTimestamp()
-          });
-
-          document.getElementById('aval-form-body').style.display        = 'none';
-          document.getElementById('aval-comentario').closest('label') && null;
-          document.querySelector('.aval-comment-label').style.display     = 'none';
-          document.getElementById('aval-comentario').style.display        = 'none';
-          document.getElementById('aval-char').style.display              = 'none';
-          btn.style.display                                                = 'none';
-          document.getElementById('aval-sucesso').classList.remove('hidden');
-
-          setTimeout(fecharAvaliacao, 3000);
-
-        } catch (err) {
-          console.error('Avaliação Firebase error:', err);
-          erroEl.textContent = 'Erro ao enviar. Tente novamente.';
-          btn.disabled       = false;
-          btn.textContent    = 'Enviar Avaliação →';
-        }
-      }
-
-      function resetAvaliacao() {
-        Object.keys(notas).forEach(k => (notas[k] = 0));
-
-        document.querySelectorAll('.aval-star').forEach(s => {
-          s.classList.remove('selected', 'hovered');
-        });
-
-        const comentario = document.getElementById('aval-comentario');
-        if (comentario) { comentario.value = ''; }
-        const charEl = document.getElementById('aval-char');
-        if (charEl) charEl.textContent = '0/300';
-
-        document.getElementById('aval-erro').textContent = '';
-
-        const formBody  = document.getElementById('aval-form-body');
-        const commentLbl = document.querySelector('.aval-comment-label');
-        const commentTxt = document.getElementById('aval-comentario');
-        const charCount  = document.getElementById('aval-char');
-        const btn        = document.getElementById('aval-btn');
-        const sucesso    = document.getElementById('aval-sucesso');
-
-        if (formBody)    formBody.style.display    = '';
-        if (commentLbl)  commentLbl.style.display  = '';
-        if (commentTxt)  commentTxt.style.display  = '';
-        if (charCount)   charCount.style.display   = '';
-        if (btn)         { btn.style.display = ''; btn.disabled = false; btn.textContent = 'Enviar Avaliação →'; }
-        if (sucesso)     sucesso.classList.add('hidden');
-      }
-
-      /* ----------------------------------------------------------
-         API global — chamada pelo Unity via jslib
-      ---------------------------------------------------------- */
-      window.abrirAvaliacao = function () {
-        resetAvaliacao();
-        document.getElementById('aval-overlay').classList.remove('hidden');
       };
-
-      window.fecharAvaliacao = function () {
-        document.getElementById('aval-overlay').classList.add('hidden');
-      };
-
-      window.fecharAvaliacaoOverlay = function (event) {
-        if (event.target === document.getElementById('aval-overlay')) fecharAvaliacao();
-      };
-
-      window.enviarAvaliacao = enviarAvaliacao;
-
-      initStars();
     </script>
 
   </body>
