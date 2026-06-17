@@ -206,6 +206,35 @@
   </head>
   <body>
 
+    <!-- ========================================================
+         INTERCEPTOR DE TECLADO — deve rodar ANTES do Unity loader
+         Envolve os listeners de keyboard da Unity com uma guarda
+         que os desativa enquanto o modal de avaliação está aberto.
+         ======================================================== -->
+    <script>
+      var _modalOpen = false;
+
+      (function () {
+        var _wAEL = window.addEventListener.bind(window);
+        var _dAEL = document.addEventListener.bind(document);
+        var KB = { keydown: 1, keyup: 1, keypress: 1 };
+
+        function wrap(fn) {
+          return function (e) {
+            if (_modalOpen) return;
+            return fn.apply(this, arguments);
+          };
+        }
+
+        window.addEventListener = function (type, fn, opts) {
+          _wAEL(type, KB[type] ? wrap(fn) : fn, opts);
+        };
+        document.addEventListener = function (type, fn, opts) {
+          _dAEL(type, KB[type] ? wrap(fn) : fn, opts);
+        };
+      })();
+    </script>
+
     <!-- ========== UNITY CONTAINER ========== -->
     <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
@@ -362,7 +391,6 @@
     <!-- ========== AVALIAÇÃO — UI (script normal, sem module) ========== -->
     <script>
       var notas = { navegacao: 0, desempenho: 0, visual: 0, conteudo: 0 };
-      var _kbBlocker = null;
 
       /* Estrelas */
       document.querySelectorAll('.aval-stars').forEach(function(group) {
@@ -398,10 +426,8 @@
         var canvas = document.getElementById('unity-canvas');
         if (canvas) canvas.blur();
 
-        /* 3. Bloqueia eventos de teclado de chegarem à Unity enquanto modal está aberto */
-        _kbBlocker = function(e) { e.stopImmediatePropagation(); };
-        document.addEventListener('keydown', _kbBlocker, true);
-        document.addEventListener('keyup',   _kbBlocker, true);
+        /* 3. Ativa a guarda — listeners da Unity são ignorados enquanto modal estiver aberto */
+        _modalOpen = true;
 
         document.getElementById('aval-overlay').classList.remove('hidden');
 
@@ -414,12 +440,8 @@
       function fecharAvaliacao() {
         document.getElementById('aval-overlay').classList.add('hidden');
 
-        /* Remove bloqueio de teclado e devolve foco à Unity */
-        if (_kbBlocker) {
-          document.removeEventListener('keydown', _kbBlocker, true);
-          document.removeEventListener('keyup',   _kbBlocker, true);
-          _kbBlocker = null;
-        }
+        /* Desativa a guarda e devolve foco à Unity */
+        _modalOpen = false;
         var canvas = document.getElementById('unity-canvas');
         if (canvas) canvas.focus();
       }
