@@ -293,12 +293,50 @@
         margin: 0;
       }
 
+      /* Botão flutuante */
+      .aval-fab {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 8000;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, var(--aval-violet), #3DCEFF);
+        color: #fff;
+        font-family: 'Orbitron', 'Segoe UI', sans-serif;
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 100px;
+        cursor: pointer;
+        box-shadow: 0 4px 24px rgba(91,78,255,.45), 0 0 0 1px rgba(12,255,225,.15);
+        transition: transform .2s, box-shadow .2s;
+        animation: fab-in .4s .8s cubic-bezier(0.34,1.4,0.64,1) both;
+      }
+
+      .aval-fab:hover {
+        transform: translateY(-3px) scale(1.04);
+        box-shadow: 0 8px 36px rgba(12,255,225,.35), 0 0 0 1px rgba(12,255,225,.3);
+      }
+
+      .aval-fab-star { font-size: 1rem; }
+
+      @keyframes fab-in {
+        from { opacity: 0; transform: translateY(20px) scale(.9); }
+        to   { opacity: 1; transform: translateY(0)   scale(1);   }
+      }
+
       /* Responsivo mobile */
       @media (max-width: 520px) {
         .aval-card { padding: 28px 20px 24px; }
         .aval-criterio { flex-direction: column; align-items: flex-start; gap: 8px; }
         .aval-criterio-label { min-width: unset; }
         .aval-star { font-size: 1.5rem; }
+        .aval-fab { bottom: 16px; right: 16px; padding: 10px 16px; font-size: .6rem; }
       }
     </style>
   </head>
@@ -322,6 +360,14 @@
         <div id="unity-build-title">EdukaLabsWeb</div>
       </div>
     </div>
+
+    <!-- ============================================================
+         BOTÃO FLUTUANTE DE AVALIAÇÃO
+         ============================================================ -->
+    <button class="aval-fab" onclick="window.abrirAvaliacao && window.abrirAvaliacao()">
+      <span class="aval-fab-star">⭐</span>
+      Avaliar Experiência
+    </button>
 
     <!-- ============================================================
          MODAL DE AVALIAÇÃO
