@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avaliação da Experiência — MVHC</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #07091A;
+      --bg2:     #0D1028;
+      --surface: #161A3A;
+      --border:  rgba(92,105,255,.22);
+      --cyan:    #0CFFE1;
+      --violet:  #5B4EFF;
+      --violet2: #8B7EFF;
+      --text:    #E2E6FF;
+      --muted:   #7B82B0;
+      --dim:     #4A5080;
+      --star:    #F0C040;
+      --radius:  12px;
+      --error:   #ff5f6b;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 40px 20px 80px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(92,78,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(92,78,255,.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+      animation: up .5s ease both;
+    }
+
+    .header-logo {
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: .55rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid rgba(12,255,225,.3);
+      background: rgba(12,255,225,.06);
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+    }
+
+    .header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.15rem, 3vw, 1.6rem);
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: .02em;
+    }
+
+    .header p { font-size: .92rem; color: var(--muted); line-height: 1.65; }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Card de seção ── */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      margin-bottom: 16px;
+      animation: up .5s ease both;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(12,255,225,.3), transparent);
+    }
+
+    /* ── Questão genérica ── */
+    .question {
+      margin-bottom: 22px;
+    }
+
+    .question:last-child { margin-bottom: 0; }
+
+    .q-label {
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .q-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .65rem;
+      font-weight: 700;
+      color: var(--cyan);
+      background: rgba(12,255,225,.08);
+      border: 1px solid rgba(12,255,225,.2);
+      border-radius: 6px;
+      padding: 2px 8px;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .q-error {
+      font-size: .75rem;
+      color: var(--error);
+      margin-top: 6px;
+      display: block;
+      min-height: 16px;
+    }
+
+    /* ── Radio buttons (Q1 e Q2) ── */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(7,9,26,.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+
+    .radio-option:hover { border-color: rgba(12,255,225,.3); background: rgba(12,255,225,.04); }
+    .radio-option.selected { border-color: var(--cyan); background: rgba(12,255,225,.07); }
+
+    .radio-option input[type="radio"] { display: none; }
+
+    .radio-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color .2s;
+    }
+
+    .radio-option.selected .radio-dot {
+      border-color: var(--cyan);
+      background: var(--cyan);
+      box-shadow: 0 0 8px rgba(12,255,225,.4);
+    }
+
+    .radio-option.selected .radio-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+
+    .radio-label { font-size: .88rem; color: var(--muted); }
+    .radio-option.selected .radio-label { color: var(--text); }
+
+    /* ── Escala Likert de estrelas (Q3-Q10) ── */
+    .likert-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: rgba(7,9,26,.4);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      transition: border-color .2s;
+    }
+
+    .likert-row:last-child { margin-bottom: 0; }
+    .likert-row.rated { border-color: rgba(12,255,225,.3); }
+
+    .likert-label {
+      font-size: .85rem;
+      color: var(--muted);
+      line-height: 1.4;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .likert-stars {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .star {
+      font-size: 1.6rem;
+      color: var(--dim);
+      cursor: pointer;
+      transition: color .1s, transform .1s;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .star.on { color: var(--star); transform: scale(1.12); }
+
+    .likert-scale-hint {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+      margin-bottom: 14px;
+      padding: 0 2px;
+    }
+
+    .likert-scale-hint span {
+      font-size: .7rem;
+      color: var(--dim);
+      font-style: italic;
+    }
+
+    /* ── Textareas abertas (Q11-Q12) ── */
+    .open-question { margin-bottom: 18px; }
+    .open-question:last-child { margin-bottom: 0; }
+
+    textarea {
+      width: 100%;
+      background: rgba(7,9,26,.6);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      line-height: 1.55;
+      padding: 12px 14px;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    textarea:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(12,255,225,.1); }
+
+    .char-count { font-size: .72rem; color: var(--dim); text-align: right; margin-top: 4px; }
+
+    /* ── Erro global ── */
+    .erro-global {
+      display: block;
+      background: rgba(255,95,107,.08);
+      border: 1px solid rgba(255,95,107,.25);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      font-size: .82rem;
+      color: var(--error);
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .erro-global.hidden { display: none; }
+
+    /* ── Botão enviar ── */
+    .btn-submit {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--violet), #3DCEFF);
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 16px 28px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 24px rgba(91,78,255,.4);
+      margin-top: 8px;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 36px rgba(12,255,225,.3);
+    }
+
+    .btn-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    /* ── Tela de sucesso ── */
+    #tela-sucesso {
+      display: none;
+      position: relative;
+      z-index: 1;
+      max-width: 640px;
+      margin: 0 auto;
+      animation: up .5s ease both;
+    }
+
+    #tela-sucesso.show { display: block; }
+
+    .sucesso-card {
+      background: var(--surface);
+      border: 1px solid rgba(12,255,225,.25);
+      border-radius: 20px;
+      padding: 48px 32px;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(12,255,225,.06);
+    }
+
+    .sucesso-ico {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, var(--cyan), var(--violet));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 32px rgba(12,255,225,.4);
+    }
+
+    .sucesso-card h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .sucesso-card p { font-size: .92rem; color: var(--muted); line-height: 1.65; margin-bottom: 0; }
+
+    .nota-final {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(12,255,225,.08);
+      border: 1px solid rgba(12,255,225,.25);
+      border-radius: 100px;
+      padding: 8px 22px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: .06em;
+      margin: 18px 0;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      margin-top: 28px;
+      font-size: .78rem;
+      color: var(--dim);
+    }
+
+    .footer a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer a:hover { color: var(--cyan); }
+
+    /* ── Responsivo ── */
+    @media (max-width: 500px) {
+      .section-card { padding: 22px 16px 18px; }
+      .likert-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .star { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper" id="form-wrapper">
+
+    <!-- Header -->
+    <header class="header">
+      <span class="header-logo">⬡</span>
+      <span class="badge">Pesquisa Acadêmica · CONNEPI 2026</span>
+      <h1>Avaliação do Museu Virtual<br>da História da Computação</h1>
+      <p>Responda às questões abaixo com base na sua experiência no MVHC.<br>
+         O formulário não solicita nome, e-mail ou outros dados de identificação pessoal. O preenchimento leva cerca de <strong style="color:var(--text)">3 minutos</strong>.</p>
+    </header>
+
+    <!-- ═══ SEÇÃO 1: PERFIL ═══ -->
+    <div class="section-card">
+      <div class="section-title">01 — Perfil do Participante</div>
+
+      <!-- Q1 -->
+      <div class="question">
+        <label class="q-label"><span class="q-num">1</span>Qual é o seu perfil?</label>
+        <div class="radio-group" id="rg-perfil">
+          <label class="radio-option" onclick="selectRadio('perfil','estudante',this)">
+            <input type="radio" name="perfil" value="estudante" />
+            <span class="radio-dot"></span>
+            <span class="radio-label">Estudante</span>
+          </label>
+          <label class="radio-option" onclick="selectRadio('perfil','professor',this)">
+            <input type="radio" name="perfil" value="professor" />
+            <span class="radio-dot"></span>
+            <span class="radio-label">Professor</span>
+          </label>
+          <label class="radio-option" onclick="selectRadio('perfil','publico',this)">
+            <input type="radio" name="perfil" value="publico" />
+            <span class="radio-dot"></span>
+            <span class="radio-label">Público geral</span>
+          </label>
+          <label class="radio-option" onclick="selectRadio('perfil','outro',this)">
+            <input type="radio" name="perfil" value="outro" />
+            <span class="radio-dot"></span>
+            <span class="radio-label">Outro</span>
+          </label>
+        </div>
+        <span class="q-error" id="err-perfil"></span>
+      </div>
+
+      <!-- Q2 -->
+      <div class="question">
+        <label class="q-label"><span class="q-num">2</span>Com que frequência você utiliza jogos ou ambientes virtuais em 3D?</label>
+        <div class="radio-group" id="rg-frequencia">
+          <label class="radio-option" onclick="selectRadio('frequencia','nunca',this)">
+            <input type="radio" name="frequencia" value="nunca" />
+            <span class="radio-dot"></span>
+            <span class="radio-label">Nunca</span>
+          </label>
+          <label class="radio-option" onclick="selectRadio('frequencia','raramente',this)">
+            <input type="radio" name="frequencia" value="raramente" />
+            <span class="radio-dot"></span>
+            <span class="radio-label">Raramente</span>
+          </label>
+          <label class="radio-option" onclick="selectRadio('frequencia','as-vezes',this)">
+            <input type="radio" name="frequencia" value="as-vezes" />
+            <span class="radio-dot"></span>
+            <span class="radio-label">Às vezes</span>
+          </label>
+          <label class="radio-option" onclick="selectRadio('frequencia','frequentemente',this)">
+            <input type="radio" name="frequencia" value="frequentemente" />
+            <span class="radio-dot"></span>
+            <span class="radio-label">Frequentemente</span>
+          </label>
+        </div>
+        <span class="q-error" id="err-frequencia"></span>
+      </div>
+    </div>
+
+    <!-- ═══ SEÇÃO 2: AVALIAÇÃO ═══ -->
+    <div class="section-card">
+      <div class="section-title">02 — Avaliação da Experiência</div>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px">
+        Avalie os itens abaixo de 1 a 5, sendo <strong style="color:var(--text)">1 = Muito ruim</strong> e <strong style="color:var(--text)">5 = Muito bom</strong>.
+      </p>
+
+      <div class="likert-scale-hint">
+        <span>1 — Muito ruim</span>
+        <span>5 — Muito bom</span>
+      </div>
+
+      <!-- Q3 -->
+      <div class="likert-row" id="row-q3">
+        <span class="likert-label"><span class="q-num">3</span>Facilidade para compreender os comandos de navegação.</span>
+        <div class="likert-stars" data-key="q3">
+          <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+          <span class="star" data-v="5">★</span>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="likert-row" id="row-q4">
+        <span class="likert-label"><span class="q-num">4</span>Facilidade para se movimentar pelo ambiente 3D.</span>
+        <div class="likert-stars" data-key="q4">
+          <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+          <span class="star" data-v="5">★</span>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="likert-row" id="row-q5">
+        <span class="likert-label"><span class="q-num">5</span>Facilidade para identificar e interagir com os objetos e painéis.</span>
+        <div class="likert-stars" data-key="q5">
+          <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+          <span class="star" data-v="5">★</span>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="likert-row" id="row-q6">
+        <span class="likert-label"><span class="q-num">6</span>Desempenho e fluidez do sistema durante a navegação.</span>
+        <div class="likert-stars" data-key="q6">
+          <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+          <span class="star" data-v="5">★</span>
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="likert-row" id="row-q7">
+        <span class="likert-label"><span class="q-num">7</span>Qualidade visual do museu.</span>
+        <div class="likert-stars" data-key="q7">
+          <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+          <span class="star" data-v="5">★</span>
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="likert-row" id="row-q8">
+        <span class="likert-label"><span class="q-num">8</span>Clareza dos textos e das informações históricas.</span>
+        <div class="likert-stars" data-key="q8">
+          <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+          <span class="star" data-v="5">★</span>
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="likert-row" id="row-q9">
+        <span class="likert-label"><span class="q-num">9</span>Contribuição do ambiente para a compreensão da história da computação.</span>
+        <div class="likert-stars" data-key="q9">
+          <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+          <span class="star" data-v="5">★</span>
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="likert-row" id="row-q10">
+        <span class="likert-label"><span class="q-num">10</span>Avaliação geral da experiência.</span>
+        <div class="likert-stars" data-key="q10">
+          <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+          <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+          <span class="star" data-v="5">★</span>
+        </div>
+      </div>
+
+      <span class="q-error" id="err-likert"></span>
+    </div>
+
+    <!-- ═══ SEÇÃO 3: QUESTÕES ABERTAS ═══ -->
+    <div class="section-card">
+      <div class="section-title">03 — Questões Abertas</div>
+
+      <!-- Q11 -->
+      <div class="open-question">
+        <label class="q-label" for="q11"><span class="q-num">11</span>Qual foi a principal dificuldade encontrada durante a navegação?</label>
+        <textarea id="q11" maxlength="400"
+          placeholder="Descreva qualquer dificuldade técnica, de controle ou de compreensão que tenha encontrado…"
+          oninput="document.getElementById('char11').textContent = this.value.length + '/400'"></textarea>
+        <div class="char-count" id="char11">0/400</div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="open-question">
+        <label class="q-label" for="q12"><span class="q-num">12</span>Que aspecto do museu deveria ser melhorado?</label>
+        <textarea id="q12" maxlength="400"
+          placeholder="Sugestões sobre navegação, conteúdo, visual, interatividade, desempenho ou qualquer outra área…"
+          oninput="document.getElementById('char12').textContent = this.value.length + '/400'"></textarea>
+        <div class="char-count" id="char12">0/400</div>
+      </div>
+    </div>
+
+    <!-- Consentimento -->
+    <div class="section-card" style="margin-bottom:16px">
+      <label id="consent-label" style="display:flex;align-items:flex-start;gap:14px;cursor:pointer">
+        <span id="consent-box" onclick="toggleConsent()" style="
+          flex-shrink:0; margin-top:2px;
+          width:20px; height:20px;
+          border:2px solid var(--border);
+          border-radius:5px;
+          display:flex; align-items:center; justify-content:center;
+          transition:border-color .2s, background .2s;
+        "></span>
+        <span style="font-size:.88rem;color:var(--muted);line-height:1.6">
+          Declaro que participei voluntariamente e autorizo o uso das respostas,
+          de forma não identificada, para fins acadêmicos.
+        </span>
+      </label>
+      <span class="q-error" id="err-consent"></span>
+    </div>
+
+    <!-- Erro global -->
+    <span class="erro-global hidden" id="erro-global"></span>
+
+    <!-- Botão -->
+    <button class="btn-submit" id="btn-submit" onclick="enviar()">
+      Enviar Avaliação →
+    </button>
+
+  </div><!-- /form-wrapper -->
+
+  <!-- ═══ TELA DE SUCESSO ═══ -->
+  <div id="tela-sucesso">
+    <div class="sucesso-card">
+      <div class="sucesso-ico">✓</div>
+      <h2>Obrigado pela participação!</h2>
+      <p>Sua avaliação foi registrada com sucesso e contribuirá diretamente para a pesquisa do MVHC no CONNEPI 2026.</p>
+      <div class="nota-final" id="nota-final">⭐ Média geral: —</div>
+      <p style="margin-top:10px">
+        <a href="https://felipehaiashida.github.io/MVHC_UNITY_WEB/" style="color:var(--cyan);text-decoration:none">
+          ← Voltar ao Museu Virtual
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Museu Virtual da História da Computação · Projeto Acadêmico · IFCE · 2026.1</p>
+    <p style="margin-top:6px">
+      <a href="https://felipehaiashida.github.io/MVHC_UNITY_WEB/" target="_blank">Acessar o Museu Virtual</a>
+    </p>
+  </footer>
+
+  <!-- ════ LÓGICA UI ════ -->
+  <script>
+    /* Consentimento */
+    var consentido = false;
+
+    function toggleConsent() {
+      consentido = !consentido;
+      var box = document.getElementById('consent-box');
+      box.style.borderColor  = consentido ? 'var(--cyan)' : 'var(--border)';
+      box.style.background   = consentido ? 'var(--cyan)'  : 'transparent';
+      box.innerHTML          = consentido ? '<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="#07091A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+      document.getElementById('err-consent').textContent = '';
+    }
+
+    /* Estado do formulário */
+    var respostas = {
+      perfil:     null,
+      frequencia: null,
+      q3: 0, q4: 0, q5: 0, q6: 0,
+      q7: 0, q8: 0, q9: 0, q10: 0
+    };
+
+    /* Radio buttons customizados */
+    function selectRadio(campo, valor, el) {
+      respostas[campo] = valor;
+      document.querySelectorAll('#rg-' + campo + ' .radio-option').forEach(function(opt) {
+        opt.classList.remove('selected');
+      });
+      el.classList.add('selected');
+      document.getElementById('err-' + campo).textContent = '';
+    }
+
+    /* Estrelas Likert */
+    document.querySelectorAll('.likert-stars').forEach(function(group) {
+      var key   = group.dataset.key;
+      var stars = Array.from(group.querySelectorAll('.star'));
+
+      function paint(v) {
+        stars.forEach(function(s) { s.classList.toggle('on', parseInt(s.dataset.v) <= v); });
+      }
+
+      stars.forEach(function(star) {
+        star.addEventListener('mouseover', function() { paint(parseInt(star.dataset.v)); });
+        star.addEventListener('mouseout',  function() { paint(respostas[key]); });
+        star.addEventListener('click', function() {
+          respostas[key] = parseInt(star.dataset.v);
+          paint(respostas[key]);
+          document.getElementById('row-' + key).classList.add('rated');
+          document.getElementById('err-likert').textContent = '';
+        });
+      });
+    });
+
+    /* Validação e envio */
+    function enviar() {
+      var erroGlobal = document.getElementById('erro-global');
+      erroGlobal.classList.add('hidden');
+      erroGlobal.textContent = '';
+
+      /* Valida radio */
+      var ok = true;
+      if (!respostas.perfil) {
+        document.getElementById('err-perfil').textContent = 'Selecione uma opção.';
+        ok = false;
+      }
+      if (!respostas.frequencia) {
+        document.getElementById('err-frequencia').textContent = 'Selecione uma opção.';
+        ok = false;
+      }
+
+      /* Valida estrelas */
+      var semNota = ['q3','q4','q5','q6','q7','q8','q9','q10'].filter(function(k) {
+        return respostas[k] === 0;
+      });
+
+      if (semNota.length) {
+        document.getElementById('err-likert').textContent =
+          'Avalie todas as ' + semNota.length + ' questão(ões) sem resposta.';
+
+        /* Destaca linhas sem nota */
+        semNota.forEach(function(k) {
+          var row = document.getElementById('row-' + k);
+          row.style.borderColor = 'rgba(255,95,107,.5)';
+          setTimeout(function() { row.style.borderColor = ''; }, 3000);
+        });
+        ok = false;
+      }
+
+      if (!consentido) {
+        document.getElementById('err-consent').textContent = 'É necessário confirmar a participação voluntária para enviar.';
+        ok = false;
+      }
+
+      if (!ok) {
+        erroGlobal.textContent = 'Por favor, responda todas as questões obrigatórias.';
+        erroGlobal.classList.remove('hidden');
+        document.querySelector('.section-card').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      /* Desabilita botão */
+      var btn = document.getElementById('btn-submit');
+      btn.disabled    = true;
+      btn.textContent = 'Enviando…';
+
+      var media = ['q3','q4','q5','q6','q7','q8','q9','q10']
+        .reduce(function(s, k) { return s + respostas[k]; }, 0) / 8;
+
+      var dados = {
+        perfil:      respostas.perfil,
+        frequencia:  respostas.frequencia,
+        q3_comandos:    respostas.q3,
+        q4_movimentacao: respostas.q4,
+        q5_interacao:   respostas.q5,
+        q6_desempenho:  respostas.q6,
+        q7_visual:      respostas.q7,
+        q8_textos:      respostas.q8,
+        q9_contribuicao: respostas.q9,
+        q10_geral:      respostas.q10,
+        media:          parseFloat(media.toFixed(2)),
+        q11_dificuldade: document.getElementById('q11').value.trim() || null,
+        q12_melhoria:    document.getElementById('q12').value.trim() || null
+      };
+
+      if (typeof window._fbSave === 'function') {
+        window._fbSave(dados)
+          .then(function() { mostrarSucesso(media); })
+          .catch(function(err) {
+            console.error(err);
+            erroGlobal.textContent = 'Erro ao enviar. Verifique sua conexão e tente novamente.';
+            erroGlobal.classList.remove('hidden');
+            btn.disabled    = false;
+            btn.textContent = 'Enviar Avaliação →';
+          });
+      }
+    }
+
+    function mostrarSucesso(media) {
+      document.getElementById('form-wrapper').style.display   = 'none';
+      document.getElementById('nota-final').textContent = '⭐ Média geral: ' + media.toFixed(1) + ' / 5.0';
+      document.getElementById('tela-sucesso').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+  <!-- ════ FIREBASE ════ -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey:            "AIzaSyACU2e2XRbrVH4_iYjF9_memwqxcxBvTzg",
+      authDomain:        "mvhc-d8cde.firebaseapp.com",
+      projectId:         "mvhc-d8cde",
+      storageBucket:     "mvhc-d8cde.firebasestorage.app",
+      messagingSenderId: "520624726072",
+      appId:             "1:520624726072:web:801b9ede2d99dec62186cd"
+    });
+
+    const ref = collection(getFirestore(app), "avaliacoes");
+
+    window._fbSave = function(dados) {
+      return addDoc(ref, Object.assign({}, dados, {
+        origem:    "link-externo",
+        timestamp: serverTimestamp()
+      }));
+    };
+  </script>
+
+</body>
+</html>
